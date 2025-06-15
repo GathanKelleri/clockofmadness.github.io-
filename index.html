@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonic: Clock of Madness | Dark Time Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3a0088;
+            --secondary: #0096c7;
+            --accent: #7b2cbf;
+            --dark: #0a061f;
+            --text: #e2f3f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+            background-image: url('https://m.gjcdn.net/game-header/1900/668096-crop0_134_3703_1505-cux9bhnk-v4.webp');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        /* Dark overlay */
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 6, 31, 0.85);
+            z-index: -3;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -4;
+            background: linear-gradient(-45deg, #0a061f, #1a0036, #2a0a5a, #4a148c);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glitch Effects */
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(0, 150, 199, 0.1) 1px,
+                transparent 2px
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        .logo {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(123, 44, 191, 0.7));
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 150, 199, 0.5);
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin: 30px 0 15px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Game Info Section */
+        .game-info {
+            background: rgba(15, 12, 41, 0.7);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 20px rgba(123, 44, 191, 0.3);
+        }
+
+        /* Screenshots Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .gallery img {
+            width: 100%;
+            border-radius: 5px;
+            border: 2px solid var(--primary);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 15px var(--secondary);
+        }
+
+        /* Team Section */
+        .team {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .team-member {
+            background: rgba(58, 0, 136, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--accent);
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            background: rgba(58, 0, 136, 0.3);
+        }
+
+        .team-member h4 {
+            color: var(--secondary);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .team-member ul {
+            list-style-type: none;
+        }
+
+        .team-member li {
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .team-member li:before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* Download Section */
+        .download {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Orbitron', sans-serif;
+            text-decoration: none;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(123, 44, 191, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(123, 44, 191, 0.6);
+            background: linear-gradient(45deg, var(--accent), var(--primary));
+        }
+
+        /* Video Section */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 150, 199, 0.3);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* News Section */
+        .news {
+            background: rgba(15, 12, 41, 0.7);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid var(--accent);
+        }
+
+        .news-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(123, 44, 191, 0.3);
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .news-date {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .news-image {
+            width: 100%;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid var(--accent);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: 1px solid var(--accent);
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-link:hover {
+            background: rgba(123, 44, 191, 0.2);
+            color: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        /* Glitch Effects */
+        .glitch-text {
+            position: relative;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch-text::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch 3s infinite;
+        }
+
+        .glitch-text::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch 2s infinite reverse;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Random Glitch Effect */
+        @keyframes random-glitch {
+            0% { transform: translate(0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, -5px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(123, 44, 191, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            .logo { max-width: 300px; }
+            .team { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="dark-overlay"></div>
+    <div class="glitch-overlay"></div>
+    <div class="scanlines"></div>
+
+    <div class="container">
+        <header>
+            <img src="https://i.gjcdn.net/public-data/games/10/96/668096/media/game-description/ia_peredelal222-9nfkqpp5.png" alt="Sonic: Clock of Madness Logo" class="logo">
+            <h1 class="glitch-text" data-text="Sonic: Clock of Madness">Sonic: Clock of Madness</h1>
+            <p>A dark and twisted Sonic fangame by Dark Time Studio</p>
+        </header>
+
+        <section class="game-info">
+            <h2>About The Game</h2>
+            <p>One day, Sonic and Tails discovered a strange energy in Sky Sanctuary Zone. They decided to check it out and find the source of the energy. They thought it was a Chaos Emerald, but it wasn't. The energy was emitted by a strange clock. The heroes began to think about why and how the clock was there. But Sonic got impatient and touched the clock. Tails tried to stop him, but it was too late. When Sonic touched the clock, it took him under its control and Tails was teleported to the Bad Future. Can Tails, Knuckles and Dr. Eggman save Sonic and the future of Mobius itself?</p>
+            
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/Bnlem0mWjn0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <h2>Screenshots</h2>
+            <div class="gallery">
+                <img src="https://i.gjcdn.net/public-data/games/10/96/668096/screenshots/3-crcffgda.png" alt="Screenshot 1">
+                <img src="https://i.gjcdn.net/public-data/games/10/96/668096/screenshots/1-wgmhdqht.png" alt="Screenshot 2">
+                <img src="https://i.gjcdn.net/public-data/games/10/96/668096/screenshots/2-ujgignmy.png" alt="Screenshot 3">
+            </div>
+        </section>
+
+        <section class="team-section">
+            <h2>Development Team</h2>
+            <div class="team">
+                <div class="team-member">
+                    <h4>Gathan Kelleri</h4>
+                    <ul>
+                        <li>Главный разработчик</li>
+                        <li>Сценарист</li>
+                        <li>Музыкант</li>
+                        <li>Аниматор</li>
+                        <li>Программист</li>
+                        <li>Актер озвучки</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Arkon</h4>
+                    <ul>
+                        <li>Левел дизайнер</li>
+                        <li>Программист</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Arly</h4>
+                    <ul>
+                        <li>Художник</li>
+                        <li>Музыкант</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>SteveGode</h4>
+                    <ul>
+                        <li>Помощник сценариста</li>
+                        <li>Тестеровщик</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Wencell</h4>
+                    <ul>
+                        <li>Композитор</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Sal</h4>
+                    <ul>
+                        <li>Художник</li>
+                        <li>Аниматор</li>
+                        <li>Тестер</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Tongari</h4>
+                    <ul>
+                        <li>Художник</li>
+                        <li>Аниматор</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>vcyu</h4>
+                    <ul>
+                        <li>Композитор</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Omletus</h4>
+                    <ul>
+                        <li>Художник</li>
+                        <li>Тестеровщик</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>Wazze the eagle</h4>
+                    <ul>
+                        <li>Левел дизайнер</li>
+                        <li>Художник</li>
+                    </ul>
+                </div>
+                <div class="team-member">
+                    <h4>kwuus</h4>
+                    <ul>
+                        <li>Актер озвучки (Тейлз)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="download">
+            <h2>Download Now</h2>
+            <p>Experience the madness for yourself!</p>
+            <a href="https://gamejolt.com/get/build?game=668096&build=1506669" class="download-btn" target="_blank">Download Latest Version</a>
+        </section>
+
+        <section class="news">
+            <h2>Latest News</h2>
+            <div class="news-item">
+                <div class="news-date">April 24, 2025</div>
+                <h3>Sonic: Clock of Madness RE:AWAKE - Release Date</h3>
+                <img src="https://m.gjcdn.net/fireside-post-image/800/41319007-ntnhnnuv-v4.webp" alt="RE:AWAKE Announcement" class="news-image">
+                <p>Sonic: Clock of Madness RE:AWAKE is a reimagining of the first episode of the game. Exactly two years ago, we heard you and are now making a global update of EVERYTHING. The storyline has been rewritten and now satisfies the entire team. The episode is now called "Alpha and Omega." The titles are chosen for a reason; there is a hidden message behind them. In August, you will be able to play the Remake. Now, here's what you can expect in the game:</p>
+                
+                <h4>2.0: RE:BOOT (MAJOR) UPDATE</h4>
+                <ul>
+                    <li>Bug fixes</li>
+                    <li>Graphics improvements across all levels of EP1</li>
+                    <li>More interactive scenes in EP1</li>
+                    <li>Overhaul of all cutscenes in EP1. There will be hand-drawn animation and engine scenes presented as a visual novel (yes, that's why there was text in the trailer)</li>
+                    <li>New tutorial zone</li>
+                    <li>New cutscenes in EP1</li>
+                    <li>Updated voice cast (English dubbing)</li>
+                    <li>Opening and ending sequences</li>
+                    <li>Addition of new zones in EP1</li>
+                    <li>New soundtracks for EP1</li>
+                    <li>New menu</li>
+                    <li>Pause menu</li>
+                    <li>Terminal (logs, lore)</li>
+                    <li>Improved interface</li>
+                    <li>Updated credits list (engine frame)</li>
+                </ul>
+                
+                <p>That's all for now! Stay tuned for updates. See you soon!</p>
+                <a href="https://gamejolt.com/p/sonic-clock-of-madness-re-awake-release-date-https-www-youtube-ravtjhhc" target="_blank" style="color: var(--secondary);">Read more →</a>
+            </div>
+        </section>
+
+        <div class="social-links">
+            <a href="https://gamejolt.com/@Dark-time" class="social-link" target="_blank">
+                <span>Game Jolt</span>
+            </a>
+            <a href="https://t.me/DarkTimeStudio" class="social-link" target="_blank">
+                <span>Telegram</span>
+            </a>
+            <a href="https://www.youtube.com/@darktimestudio8566" class="social-link" target="_blank">
+                <span>YouTube</span>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dark Time Studio. Sonic: Clock of Madness is a fan game and not affiliated with SEGA.</p>
+    </footer>
+
+    <script>
+        // Random glitch effect
+        function randomGlitch() {
+            const elements = document.querySelectorAll('h1, h2, h3, .team-member, .gallery img');
+            const randomElement = elements[Math.floor(Math.random() * elements.length)];
+            
+            randomElement.style.animation = 'random-glitch 0.5s';
+            setTimeout(() => {
+                randomElement.style.animation = '';
+            }, 500);
+        }
+
+        // Apply random glitch every 5-15 seconds
+        setInterval(randomGlitch, Math.random() * 10000 + 5000);
+
+        // Initial random glitch after 3 seconds
+        setTimeout(randomGlitch, 3000);
+
+        // Interactive glitch on click
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                randomGlitch();
+            }
+        });
+
+        // Dynamic background intensity
+        document.addEventListener('mousemove', function(e) {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.querySelector('.bg-animation').style.filter = `hue-rotate(${x * 60}deg) brightness(${0.8 + y * 0.2})`;
+        });
+    </script>
+</body>
+</html>
